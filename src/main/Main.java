@@ -11,15 +11,15 @@ import java.util.Scanner;
 
 public class Main {
 	
-	
+	private static double timeLimit = 120;
 	
 	private static void check(String repositoryUrl) throws IOException  {
 		
 		String dir;
 		if(System.getProperty("os.name").contains("Linux"))
-			dir  = "/home/jaziel/Dropbox/UFCG/Projeto/Dados/CSVs/Refatoramentos"; //Linux
+			dir  = "/home/jaziel/Dropbox/UFCG/Projeto/Dados/Projetos a serem testados"; //Linux
 		else
-			dir  = "C:\\Users\\Jaziel Moreira\\Dropbox\\UFCG\\Projeto\\Dados\\CSVs\\Refatoramentos"; //Windows
+			dir  = "C:\\Users\\Jaziel Moreira\\Dropbox\\UFCG\\Projeto\\Projetos a serem testados"; //Windows
 		
 		String aux=repositoryUrl.substring(repositoryUrl.lastIndexOf("/")+1);
 		
@@ -45,7 +45,7 @@ public class Main {
 				String parent=in.next();
 				fw.write(commit+";");
 				try {
-					boolean sameBehaviour=p.check(commit, parent);
+					boolean sameBehaviour=p.check(commit, parent, timeLimit);
 					if(sameBehaviour)
 						fw.write(1+"\n");
 					else
@@ -57,6 +57,7 @@ public class Main {
 					ps.println("Commit error: "+commit);
 					e.printStackTrace(ps);
 					ps.flush();
+					e.printStackTrace();
 				}
 				fw.flush();
 				
@@ -69,9 +70,10 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
-		check("https://github.com/spring-cloud/spring-cloud-netflix");
-		check("https://github.com/spring-projects/spring-boot");
-		check("https://github.com/junit-team/junit4");
-		check("https://github.com/prestodb/presto");
+//		System.out.println(saferefactor.core.util.Constants.SEPARATOR);
+		check("https://github.com/apache/incubator-dubbo");
+//		check("https://github.com/square/okhttp");
+//		check("https://github.com/google/guava");
+//		check("https://github.com/zxing/zxing");
 	}
 }

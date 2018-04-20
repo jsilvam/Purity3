@@ -53,7 +53,7 @@ public class MavenHandler {
 		XMLUtils.addPlugins(modules);
 		
 		execute(new File( projectFolder,"pom.xml" ), 
-				Arrays.asList( "install" , "-DskipTests"));
+				Arrays.asList( "install" , "-Dmaven.test.skip=true", "-Dmaven.javadoc.skip=true"));
 	}
 	
 	public void execute(File pomFile, List<String> goals) throws MavenInvocationException {

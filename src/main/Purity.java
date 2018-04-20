@@ -45,34 +45,39 @@ public class Purity {
 	}
 	
 
-	public boolean check(String commit, String parent) throws Exception{
+	public boolean check(String commit, String parent, double timeLimit) throws Exception {
 		
 		GithubDownloader git=new GithubDownloader(urlRepository);
-		git.setLocation(git.getLocation()+"/"+commit);
+		git.setLocation(git.getLocation()+File.separator+commit);
 		//git.setLocation("/home/jaziel/testeProjeto/okhttp/"+commit);
 		
 		File sourceFolder=new File(git.getLocation(),parent);
 		File targetFolder=new File(git.getLocation(),commit);
 		
-		if(!sourceFolder.exists()) {
-			File sourceFile=git.downloadCommit(parent);
-			sourceFolder=ZipExtractor.extract(sourceFile, new File(git.getLocation(),parent));
-			
-			File targetFile=git.downloadCommit(commit);
-			targetFolder=ZipExtractor.extract(targetFile, new File(git.getLocation(),commit));
-			
-			System.out.println(sourceFolder.getAbsolutePath());
-			
-			MavenHandler mavenHandler = new MavenHandler();
-			mavenHandler.compileProject(sourceFolder);
-			mavenHandler.compileProject(targetFolder);
-		}
+		try {
+			if(!sourceFolder.exists()) {
+				File sourceFile=git.downloadCommit(parent);
+				sourceFolder=ZipExtractor.extract(sourceFile, new File(git.getLocation(),parent));
+				
+				File targetFile=git.downloadCommit(commit);
+				targetFolder=ZipExtractor.extract(targetFile, new File(git.getLocation(),commit));
+				
+				System.out.println(sourceFolder.getAbsolutePath());
+				
+				MavenHandler mavenHandler = new MavenHandler();
+				mavenHandler.compileProject(sourceFolder);
+				mavenHandler.compileProject(targetFolder);
+			}
 		
-		Test test=new Test(sourceFolder,targetFolder);
-		test.generate(120);
-		boolean hasSameBehaviour=test.hasSameBehaviour();
-		this.deleteDirectory(git.getLocation());
-		return hasSameBehaviour;
+		
+			Test test=new Test(sourceFolder,targetFolder, timeLimit);
+			boolean hasSameBehaviour=test.hasSameBehaviour();
+			this.deleteDirectory(git.getLocation());
+			return hasSameBehaviour;
+		} catch (Exception e) {
+			this.deleteDirectory(git.getLocation());
+			throw e;	
+		}
 	}
 	
 	
