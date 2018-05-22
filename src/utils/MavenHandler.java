@@ -12,11 +12,9 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 
 public class MavenHandler {
 
-	private String mavenHome;
 	private Invoker invoker;
 	
 	public MavenHandler(String mavenHome) {
-		this.mavenHome = mavenHome;
 		invoker = new DefaultInvoker();
 		invoker.setMavenHome(new File(mavenHome));
 	}
@@ -30,11 +28,10 @@ public class MavenHandler {
 	}
 	
 	public String getMavenHome() {
-		return mavenHome;
+		return invoker.getMavenHome().getAbsolutePath();
 	}
 
 	public void setMavenHome(String mavenHome) {
-		this.mavenHome = mavenHome;
 		invoker.setMavenHome(new File(mavenHome));
 	}
 
@@ -49,11 +46,14 @@ public class MavenHandler {
 	}
 	
 	public void compileProject(File projectFolder) throws Exception{
-		List<File> modules=XMLUtils.getModules(new File(projectFolder,"pom.xml"));
-		XMLUtils.addPlugins(modules);
-		
 		execute(new File( projectFolder,"pom.xml" ), 
-				Arrays.asList( "install" , "-Dmaven.test.skip=true", "-Dmaven.javadoc.skip=true"));
+				Arrays.asList( "compile"));
+		
+//		List<File> modules=XMLUtils.getModules(new File(projectFolder,"pom.xml"));
+//		XMLUtils.addPlugins(modules);
+//		
+//		execute(new File( projectFolder,"pom.xml" ), 
+//				Arrays.asList( "install" , "-Dmaven.test.skip=true", "-Dmaven.javadoc.skip=true"));
 	}
 	
 	public void execute(File pomFile, List<String> goals) throws MavenInvocationException {

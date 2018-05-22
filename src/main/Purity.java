@@ -49,7 +49,6 @@ public class Purity {
 		
 		GithubDownloader git=new GithubDownloader(urlRepository);
 		git.setLocation(git.getLocation()+File.separator+commit);
-		//git.setLocation("/home/jaziel/testeProjeto/okhttp/"+commit);
 		
 		File sourceFolder=new File(git.getLocation(),parent);
 		File targetFolder=new File(git.getLocation(),commit);

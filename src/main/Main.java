@@ -12,29 +12,30 @@ import java.util.Scanner;
 public class Main {
 	
 	private static double timeLimit = 120;
+	private static String dataFolder = "Projetos Dataset";
+	private static File dir = new File(System.getProperty("user.home") + File.separator + 
+			"Dropbox" + File.separator + "UFCG" + File.separator + 
+			"Projeto" + File.separator + "Dados" + File.separator + dataFolder);
 	
 	private static void check(String repositoryUrl) throws IOException  {
 		
-		String dir;
-		if(System.getProperty("os.name").contains("Linux"))
-			dir  = "/home/jaziel/Dropbox/UFCG/Projeto/Dados/Projetos a serem testados"; //Linux
-		else
-			dir  = "C:\\Users\\Jaziel Moreira\\Dropbox\\UFCG\\Projeto\\Projetos a serem testados"; //Windows
+		String projectName=repositoryUrl.substring(repositoryUrl.lastIndexOf("/")+1);
 		
-		String aux=repositoryUrl.substring(repositoryUrl.lastIndexOf("/")+1);
+		File refactoringsFile = new File(dir,"Part 1" + File.separator + projectName+".csv");
+		File isRefactoringFile = new File(dir, "Part 2" + File.separator + projectName+".csv");
+		File logFile = new File(dir, "Part 2" + File.separator + "log" + File.separator + projectName+" - log.txt");
 		
 		Purity p=new Purity(repositoryUrl);
-		Scanner in = new Scanner(new FileReader(dir+"/Part 1/"+aux+".csv")).useDelimiter(";");
-		FileWriter fw= new FileWriter(new File(dir+"/Part 2/"+aux+".csv"));
-		
-		
+		Scanner in = new Scanner(refactoringsFile).useDelimiter(";");
+		FileWriter fw= new FileWriter(isRefactoringFile);
 		
 		PrintStream ps = new PrintStream(
-			     new FileOutputStream(dir+"/Part 2/"+aux+" - log.txt", true));
+			     new FileOutputStream(logFile, true));
 		
 		fw.write("Commit;isRefactoring\n");
 		fw.flush();
 		String commit="";
+		String aux;
 		
 		in.nextLine();
 		while(in.hasNext()) {
@@ -50,7 +51,7 @@ public class Main {
 						fw.write(1+"\n");
 					else
 						fw.write(0+"\n");
-					System.out.println("Same Behaviour: "+sameBehaviour);
+					System.out.println("Same Behaviour [Commit]: "+sameBehaviour);
 				} catch (Exception e) {
 					fw.write((-1)+"\n");
 					System.out.println("Same Behaviour: Error");
@@ -70,10 +71,16 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
-//		System.out.println(saferefactor.core.util.Constants.SEPARATOR);
-		check("https://github.com/apache/incubator-dubbo");
-//		check("https://github.com/square/okhttp");
-//		check("https://github.com/google/guava");
-//		check("https://github.com/zxing/zxing");
+		File urlsFile = new File ("");
+		Scanner urls = new Scanner(urlsFile);
+		
+		while(urls.hasNextLine()){
+			try {
+				check(urls.nextLine());
+			}catch(FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		urls.close();
 	}
 }

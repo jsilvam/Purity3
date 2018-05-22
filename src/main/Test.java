@@ -49,9 +49,11 @@ public class Test {
 	}
 
 	public boolean hasSameBehaviour() throws Exception {
-		
 		List<File> sourceModules = XMLUtils.getModules(new File(sourceProjectFolder,"pom.xml"));
 		List<File> targetModules = XMLUtils.getModules(new File(targetProjectFolder,"pom.xml"));
+		
+		int moduleCount = 0;
+		int errorCount = 0;
 		for(File sourceFolder: sourceModules) {
 			String path = sourceFolder.getAbsolutePath();
 			File targetFolder = new File(path.replace(sourceProjectFolder.getName(), targetProjectFolder.getName()));
@@ -60,20 +62,24 @@ public class Test {
 				System.out.println(path.split(sourceProjectFolder.getName())[1]);
 				continue;
 			}
+			moduleCount++;
 			try {
 				Project source = createProject(sourceFolder);
 				Project target = createProject(targetFolder);
-				if(!execute(source,target)) 
+				boolean isRefactoring = execute(source,target);
+				System.out.println("Same Behavior [Module]: " + isRefactoring);
+				if(!isRefactoring) 
 					return false;
 			} catch (Exception e) {
+				errorCount++;
 				System.out.println("Error verifing module: " );
 				System.out.println(sourceFolder);
 				System.out.println(targetFolder);
 				e.printStackTrace();
 			}
 		}
-		
-		
+		if(moduleCount == errorCount)
+			throw new Exception("No module verified!");
 		return true;
 	}
 	
@@ -90,7 +96,7 @@ public class Test {
 	
 	private boolean execute(Project source, Project target) throws Exception {
 		Parameters parameters = new Parameters();
-		parameters.setKind_of_analysis(Parameters.SAFIRA_ANALYSIS); //Keep?
+		//parameters.setKind_of_analysis(Parameters.SAFIRA_ANALYSIS); //Keep?
 		parameters.setTimeLimit(timeLimit);
 		
 		boolean sourceBin = true;
