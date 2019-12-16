@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,18 +14,19 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 public class MavenHandler {
 
 	private Invoker invoker;
+	private List<String> goals;
 	
 	public MavenHandler(String mavenHome) {
 		invoker = new DefaultInvoker();
-		invoker.setMavenHome(new File(mavenHome));
+		goals = new ArrayList<>();
+		setMavenHome(mavenHome);
 	}
 	
 	public MavenHandler() {
 		invoker = new DefaultInvoker();
-		if(System.getProperty("os.name").contains("Linux"))
-			setMavenHome("/usr/share/maven");
-		else
-			setMavenHome("C:\\Program Files\\apache-maven-3.5.0");
+		goals = new ArrayList<>();
+		String mavenHome = System.getenv("MAVEN_HOME");
+		setMavenHome(mavenHome);	
 	}
 	
 	public String getMavenHome() {
@@ -34,10 +36,22 @@ public class MavenHandler {
 	public void setMavenHome(String mavenHome) {
 		invoker.setMavenHome(new File(mavenHome));
 	}
+	
+	public List<String> getGoals() {
+		return goals;
+	}
+
+	public void addGoal(String goal) {
+		goals.add(goal);
+	}
+	
+	public boolean removeGoal(String goal) {
+		return goals.remove(goal);
+	}
 
 	public File copyDependencies(File projectFolder) throws MavenInvocationException {
-		execute(new File( projectFolder,"pom.xml" ),
-				Arrays.asList( "dependency:copy-dependencies"));
+		File pomFile = new File(projectFolder, "pom.xml"); 
+		execute(pomFile, Arrays.asList( "dependency:copy-dependencies"));
 		File dependenciesFolder = new File(projectFolder, "target" + File.separator + "dependency");
 		if(dependenciesFolder.exists())
 			return dependenciesFolder;
@@ -45,15 +59,9 @@ public class MavenHandler {
 			return null;
 	}
 	
-	public void compileProject(File projectFolder) throws Exception{
-		execute(new File( projectFolder,"pom.xml" ), 
-				Arrays.asList( "compile"));
-		
-//		List<File> modules=XMLUtils.getModules(new File(projectFolder,"pom.xml"));
-//		XMLUtils.addPlugins(modules);
-//		
-//		execute(new File( projectFolder,"pom.xml" ), 
-//				Arrays.asList( "install" , "-Dmaven.test.skip=true", "-Dmaven.javadoc.skip=true"));
+	public void buildProject(File projectFolder) throws Exception{
+		File pomFile = new File(projectFolder, "pom.xml"); 
+		execute(pomFile, goals);
 	}
 	
 	public void execute(File pomFile, List<String> goals) throws MavenInvocationException {

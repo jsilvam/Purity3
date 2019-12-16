@@ -96,7 +96,6 @@ public class Test {
 	
 	private boolean execute(Project source, Project target) throws Exception {
 		Parameters parameters = new Parameters();
-		//parameters.setKind_of_analysis(Parameters.SAFIRA_ANALYSIS); //Keep?
 		parameters.setTimeLimit(timeLimit);
 		
 		boolean sourceBin = true;
