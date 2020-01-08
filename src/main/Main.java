@@ -125,8 +125,10 @@ public class Main {
 		String file = buff.readLine();
 		while(file != null) {
 			File f = new File(file);
-			if(!f.exists() || f.isDirectory())
+			if(!f.exists() || f.isDirectory()) {
+				buff.close();
 				throw new Exception("invalid Input File: " + file);
+			}
 			files.add(f);
 			file = buff.readLine();
 		}

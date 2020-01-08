@@ -55,8 +55,10 @@ public class Purity {
 				System.out.println("Same Behaviour: Error");
 				e.printStackTrace();
 			}
+			commitPair = ri.getNextCommitPair();
 		}
 		ri.close();	
+		csv.close();
 	}
 
 	public boolean check(String commit, String parent, double timeLimit) throws Exception {
